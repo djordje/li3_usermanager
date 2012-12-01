@@ -11,6 +11,9 @@ use lithium\security\Auth;
  */
 define('LI3_UM_RequireUserActivation', true);
 define('LI3_UM_DefaultUserGroup', 2);
+define('LI3_UM_TokenSalt', 'AoJMd;sd5622');
+define('LI3_UM_ActivationEmailFrom', 'no-replay@example.com');
+define('LI3_UM_PasswordResetEmailFrom', LI3_UM_ActivationEmailFrom);
 
 /**
  * Auth configurations
