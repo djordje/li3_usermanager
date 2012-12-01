@@ -44,6 +44,8 @@ Clone dependencies to your `libraries` and load them in `app/config/bootstrap/li
 This plugins use:
 
 * **[li3_validators](http://github.com/djordje/li3_validators)**
+* **[li3_swiftmailer](http://github.com/djordje/li3_swiftmailer)** (config-update branch)
+* **[swiftmailer](http://github.com/swiftmailer/swiftmailer)**
 
 ## Phinx (optional)
 
@@ -71,6 +73,7 @@ Tested with revision `c2c487842ad2ee2bdd3545f4cff20449aae5561f`
 
 ## TODO
 
-Write unit tests for application
-
-Wait to some ACL solution, or extend **li3_access** to enable true power of user groups!
+* Write unit tests for application
+* Finish `ManageUsers` controller
+* Write console command for creating root user
+* Wait to some ACL solution, or extend **li3_access** to enable true power of user groups!
