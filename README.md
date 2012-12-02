@@ -47,6 +47,8 @@ This plugins use:
 * **[li3_swiftmailer](http://github.com/djordje/li3_swiftmailer)** (config-update branch)
 * **[swiftmailer](http://github.com/swiftmailer/swiftmailer)**
 
+*This plugin use Twitter Bootstrap classes in view.*
+
 ## Phinx (optional)
 
 If you want to use database migrations instead of raw sql you'll need
@@ -74,6 +76,7 @@ Tested with revision `c2c487842ad2ee2bdd3545f4cff20449aae5561f`
 ## TODO
 
 * Write unit tests for application
-* Finish `ManageUsers` controller
-* Write console command for creating root user
+* Finish `ManageUsers` controller (Add abillity to edit user, and move some logic to models to
+so we can reuse it in console commands)
+* Finis console command
 * Wait to some ACL solution, or extend **li3_access** to enable true power of user groups!
