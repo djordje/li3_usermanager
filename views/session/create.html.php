@@ -10,5 +10,9 @@
 	<?=$this->form->submit('Login', array('class' => 'btn btn-primary'));?>
 <?=$this->form->end();?>
 
-<p>Don't have account? You can register <?=$this->html->link('here', array('library' => 'li3_usermanager', 'Users::add'));?>.</p>
+<?php if (LI3_UM_EnableUserRegistration): ?>
+	<p>
+		Don't have account? You can register <?=$this->html->link('here', array('library' => 'li3_usermanager', 'Users::add'));?>.
+	</p>
+<?php endif; ?>
 <p>You can't remember your password? You can reset it <?=$this->html->link('here', array('library' => 'li3_usermanager', 'Users::requestResetPassword'));?>.</p>
