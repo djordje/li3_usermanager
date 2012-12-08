@@ -14,7 +14,9 @@ $umLib = array('library' => 'li3_usermanager');
 Router::connect('/login', $umLib + array('Session::create'));
 Router::connect('/logout', $umLib + array('Session::destroy'));
 Router::connect($um, $umLib + array('Users::index'));
-Router::connect("{$um}/register", $umLib + array('Users::add'));
+if (LI3_UM_EnableUserRegistration) {
+	Router::connect("{$um}/register", $umLib + array('Users::add'));
+}
 Router::connect("{$um}/activate/{:token}/{:username}", $umLib + array('Users::activate'));
 Router::connect("{$um}/edit/details", $umLib + array('Users::editDetails'));
 Router::connect("{$um}/edit/change-email", $umLib + array('Users::changeEmail'));
