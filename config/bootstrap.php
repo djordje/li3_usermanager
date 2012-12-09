@@ -1,9 +1,41 @@
 <?php
 
 use lithium\security\Auth;
+use lithium\core\Libraries;
+
+/**
+ * Merge options passed to library configuration with default options.
+ * This options are assigned to defines bellow!
+ */
+$LI3_UM_Options = Libraries::get('li3_usermanager', 'options');
+is_array($LI3_UM_Options) || $LI3_UM_Options = array();
+$LI3_UM_Options += array(
+	'requireUserActivation' => true,
+	'defaultUserGroup' => 2,
+	'tokenSalt' => 'AoJMd;sd5622',
+	'activationEmailFrom' => null,
+	'passwordResetEmailFrom' => null,
+	'emailFrom' => 'no-replay@example.com',
+	'enableUserRegistration' => true
+);
+if (!$LI3_UM_Options['activationEmailFrom']) {
+	$LI3_UM_Options['activationEmailFrom'] = $LI3_UM_Options['emailFrom'];
+}
+if (!$LI3_UM_Options['passwordResetEmailFrom']) {
+	$LI3_UM_Options['passwordResetEmailFrom'] = $LI3_UM_Options['emailFrom'];
+}
 
 /**
  * li3_usermanager global configuration
+ *
+ * Don't change this defines, pass your options as library config.
+ *
+ * Example:
+ * {{{
+ * 	Libraries::add('li3_usermanager', array('options' => array(
+ * 		'enableUserRegistration' => false
+ * 	));
+ * }}}
  *
  * `RequireUserActivation` If true newly created users get mail with activation token, and account
  * stay inactive until activation.
@@ -14,12 +46,12 @@ use lithium\security\Auth;
  * `LI3_UM_PasswordResetEmailFrom` Email that'll be shown in email from for password reset token
  * `LI3_UM_EnableUserRegistration` Boolean to enable control over user registration
  */
-define('LI3_UM_RequireUserActivation', true);
-define('LI3_UM_DefaultUserGroup', 2);
-define('LI3_UM_TokenSalt', 'AoJMd;sd5622');
-define('LI3_UM_ActivationEmailFrom', 'no-replay@example.com');
-define('LI3_UM_PasswordResetEmailFrom', LI3_UM_ActivationEmailFrom);
-define('LI3_UM_EnableUserRegistration', true);
+define('LI3_UM_RequireUserActivation', $LI3_UM_Options['requireUserActivation']);
+define('LI3_UM_DefaultUserGroup', $LI3_UM_Options['defaultUserGroup']);
+define('LI3_UM_TokenSalt', $LI3_UM_Options['tokenSalt']);
+define('LI3_UM_ActivationEmailFrom', $LI3_UM_Options['activationEmailFrom']);
+define('LI3_UM_PasswordResetEmailFrom', $LI3_UM_Options['passwordResetEmailFrom']);
+define('LI3_UM_EnableUserRegistration', $LI3_UM_Options['enableUserRegistration']);
 
 /**
  * Auth configurations
