@@ -1,0 +1,19 @@
+{
+	"name": "djordje/li3_usermanager",
+	"type": "lithium-library",
+	"description": "User management for Lithium PHP framework",
+	"keywords": ["php", "user", "manage","lithium", "li3"],
+	"homepage": "https://github.com/djordje/li3_usermanager",
+	"license": "BSD-3-Clause",
+	"minimum-stability": "dev",
+	"authors": [
+		{
+			"name": "Djordje Kovacevic",
+			"homepage": "http://djordjekovacevic.com"
+		}
+	],
+	"require": {
+		"php": ">=5.3",
+		"composer/installers": "dev-master"
+	}
+}
