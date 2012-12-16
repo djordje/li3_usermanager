@@ -10,25 +10,6 @@ namespace li3_usermanager\models;
 use lithium\security\Password;
 use lithium\util\Validator;
 
-/**
- * Compare entered password with old, saved in DB
- * @todo This validation should be generalized and moved to `li3_validators` plugin
- */
-Validator::add('compareWithOld', function($value, $format, $options) {
-	$options += array(
-		'fetch' => 'password',
-		'findBy' => 'id'
-	);
-	$data = $options['model']::first(array(
-		'conditions' => array($options['findBy'] => $options['values'][$options['findBy']]),
-		'fields' => $options['fetch']
-	));
-	if ($data) {
-		return Password::check($value, $data->password);
-	}
-	return false;
-});
-
 class Users extends \lithium\data\Model {
 
 	public $belongsTo = array('UserGroups');
@@ -45,7 +26,7 @@ class Users extends \lithium\data\Model {
 			)
 		),
 		'old_password' => array(
-			'compareWithOld',
+			'compareWithOldDbValue', 'strategy' => 'password', 'field' => 'password',
 			'message' => 'You must enter valid password', 'on' => 'change_password'
 		),
 		'password' => array('notEmpty', 'message' => 'Password is required'),
