@@ -1,3 +1,6 @@
+[![project status](http://stillmaintained.com/djordje/li3_usermanager.png)]
+(http://stillmaintained.com/djordje/li3_usermanager)
+
 # User managemant for [Lithium PHP framework](http://lithify.me/)
 
 **li3_usermanager** provide:
