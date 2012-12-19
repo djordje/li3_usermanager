@@ -30,7 +30,7 @@
 	"require": {
 		"php": ">=5.3",
 		"composer/installers": "dev-master",
-		"djordje/li3_validators": "v1.0.0",
+		"djordje/li3_validators": "dev-master",
 		"djordje/li3_swiftmailer": "dev-config-update",
 		"swiftmailer/swiftmailer": "v4.2.2"
 	}
