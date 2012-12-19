@@ -12,8 +12,26 @@
 			"homepage": "http://djordjekovacevic.com"
 		}
 	],
+	"repositories": [
+		{
+			"type": "package",
+			"package": {
+				"name": "djordje/li3_swiftmailer",
+				"version": "dev-config-update",
+				"type": "lithium-library",
+				"source": {
+					"type": "git",
+					"url": "git://github.com/djordje/li3_swiftmailer.git",
+					"reference": "config-update"
+				}
+			}
+		}
+	],
 	"require": {
 		"php": ">=5.3",
-		"composer/installers": "dev-master"
+		"composer/installers": "dev-master",
+		"djordje/li3_validators": "v1.0.0",
+		"djordje/li3_swiftmailer": "dev-config-update",
+		"swiftmailer/swiftmailer": "v4.2.2",
 	}
 }
