@@ -32,6 +32,6 @@
 		"composer/installers": "dev-master",
 		"djordje/li3_validators": "v1.0.0",
 		"djordje/li3_swiftmailer": "dev-config-update",
-		"swiftmailer/swiftmailer": "v4.2.2",
+		"swiftmailer/swiftmailer": "v4.2.2"
 	}
 }
