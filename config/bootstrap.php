@@ -16,7 +16,8 @@ $LI3_UM_Options += array(
 	'activationEmailFrom' => null,
 	'passwordResetEmailFrom' => null,
 	'emailFrom' => 'no-replay@example.com',
-	'enableUserRegistration' => true
+	'enableUserRegistration' => true,
+	'passwordResetExpires' => '+10 minutes'
 );
 if (!$LI3_UM_Options['activationEmailFrom']) {
 	$LI3_UM_Options['activationEmailFrom'] = $LI3_UM_Options['emailFrom'];
@@ -45,6 +46,7 @@ if (!$LI3_UM_Options['passwordResetEmailFrom']) {
  * `LI3_UM_ActivationEmailFrom` Email that'll be shown in email from for activation token
  * `LI3_UM_PasswordResetEmailFrom` Email that'll be shown in email from for password reset token
  * `LI3_UM_EnableUserRegistration` Boolean to enable control over user registration
+ * `LI3_UM_PasswordResetExpires` Setup how much time to add on current time
  */
 define('LI3_UM_RequireUserActivation', $LI3_UM_Options['requireUserActivation']);
 define('LI3_UM_DefaultUserGroup', $LI3_UM_Options['defaultUserGroup']);
@@ -52,6 +54,7 @@ define('LI3_UM_TokenSalt', $LI3_UM_Options['tokenSalt']);
 define('LI3_UM_ActivationEmailFrom', $LI3_UM_Options['activationEmailFrom']);
 define('LI3_UM_PasswordResetEmailFrom', $LI3_UM_Options['passwordResetEmailFrom']);
 define('LI3_UM_EnableUserRegistration', $LI3_UM_Options['enableUserRegistration']);
+define('LI3_UM_PasswordResetExpires', $LI3_UM_Options['passwordResetExpires']);
 
 /**
  * Auth configurations

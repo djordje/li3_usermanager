@@ -39,7 +39,6 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function index() {
 		$this->_rejectNotLogged();
-		return array('auth' => $this->_auth, 'session' => \lithium\storage\Session::read());
 	}
 
 	/**
@@ -165,7 +164,6 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 
 	/**
 	 * Request password reset
-	 * @todo Enable custom expires configuration
 	 */
 	public function requestResetPassword() {
 		$this->_rejectLogged();
@@ -191,7 +189,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 				}
 				if (!$reset || !$reset->exists()) {
 					$expires = clone $time;
-					$expires->modify('+10 minutes');
+					$expires->modify(LI3_UM_PasswordResetExpires);
 					$token = Token::generate($user->email);
 					$reset = PasswordResets::create(array(
 						'user_id' => $user->id,
@@ -222,7 +220,6 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 
 	/**
 	 * Reset password
-	 * @todo Fix old_password validation!
 	 */
 	public function resetPassword() {
 		$this->_rejectLogged();
