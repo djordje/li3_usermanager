@@ -3,7 +3,6 @@
 namespace li3_usermanager\controllers;
 
 use lithium\security\Auth;
-use lithium\util\String;
 use lithium\net\http\Router;
 use li3_usermanager\models\Users;
 use li3_usermanager\models\AboutUsers;
@@ -11,6 +10,7 @@ use li3_usermanager\models\PasswordResets;
 use li3_usermanager\models\UserActivations;
 use li3_swiftmailer\mailer\Transports;
 use li3_swiftmailer\mailer\Message;
+use li3_usermanager\extensions\util\Token;
 
 class UsersController extends \li3_usermanager\extensions\controllers\AccessController {
 
@@ -53,10 +53,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 			if ($user->save()) {
 				AboutUsers::create(array('user_id' => $user->id))->save();
 				if (LI3_UM_RequireUserActivation) {
-					$token = String::hash(mt_rand(100000, 999999) . md5($user->email), array(
-						'salt' => LI3_UM_TokenSalt,
-						'type' => 'sha256'
-					));
+					$token = Token::generate($user->email);
 					UserActivations::create(array(
 						'user_id' => $user->id,
 						'token' => $token
@@ -169,7 +166,6 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	/**
 	 * Request password reset
 	 * @todo Enable custom expires configuration
-	 * @todo Make better token generator
 	 */
 	public function requestResetPassword() {
 		$this->_rejectLogged();
@@ -196,10 +192,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 				if (!$reset || !$reset->exists()) {
 					$expires = clone $time;
 					$expires->modify('+10 minutes');
-					$token = String::hash(mt_rand(100000, 999999) . md5($user->email), array(
-						'salt' => LI3_UM_TokenSalt,
-						'type' => 'sha256'
-					));
+					$token = Token::generate($user->email);
 					$reset = PasswordResets::create(array(
 						'user_id' => $user->id,
 						'expires' => $expires->format('Y-m-d H:i:s'),
