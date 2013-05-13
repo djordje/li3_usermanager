@@ -13,12 +13,18 @@ class Users extends \li3_migrations\models\Migration {
 		'user_group_id' => array('type' => 'integer', 'default' => null, 'null' => false)
 	);
 
-	protected $_records = array();
+	protected $_records = array(
+		array(
+			'id' => 1, 'username' => 'root',
+			'password' => '$2a$10$A5YGQOVpu3QJBse.TVYhweLpKDxG.o9FDlXlYh7gS4pWIpB9pIk2e',
+			'email' => 'root@localhost', 'active' => 1, 'user_group_id' => 4
+		)
+	);
 
 	protected $_source = 'users';
 
 	public function up() {
-		return $this->create();
+		return $this->save();
 	}
 
 	public function down() {

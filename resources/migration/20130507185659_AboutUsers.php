@@ -11,7 +11,9 @@ class AboutUsers extends \li3_migrations\models\Migration {
 		'about' => array('type' => 'text', 'default' => null, 'null' => true)
 	);
 
-	protected $_records = array();
+	protected $_records = array(
+		array('user_id' => 1)
+	);
 
 	protected $_source = 'about_users';
 

@@ -15,8 +15,7 @@ class UserGroups extends \li3_migrations\models\Migration {
 		array('name' => 'Banned', 'slug' => 'banned', 'description' => 'Banned users'),
 		array('name' => 'Member', 'slug' => 'member', 'description' => 'Registered users'),
 		array('name' => 'Manager', 'slug' => 'manager', 'description' => 'Content managers'),
-		array('name' => 'Administrator', 'slug' => 'administrator', 'description' => 'Site administrators'),
-		array('name' => 'Root', 'slug' => 'root', 'description' => 'Site owner')
+		array('name' => 'Administrator', 'slug' => 'administrator', 'description' => 'Site administrators')
 	);
 
 	protected $_source = 'user_groups';
