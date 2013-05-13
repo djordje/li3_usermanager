@@ -1,32 +1,40 @@
 <?php
 
 /**
- * @copyright Copyright 2012, Djordje Kovacevic (http://djordjekovacevic.com)
+ * @copyright Copyright 2013, Djordje Kovacevic (http://djordjekovacevic.com)
  * @license   http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
 namespace li3_usermanager\extensions\controllers;
 
+use li3_usermanager\models\UserGroups;
 use lithium\security\Auth;
 use li3_usermanager\extensions\security\AccessDeniedException;
 
 /**
- * `AccessController` extend it if you need to access control in your controller.
- *
+ * `AccessController` extend it if you need to control access in your controller.
  */
 class AccessController extends \lithium\action\Controller {
 
 	/**
 	 * Auth `Auth::check('default')` data available as controller's property
 	 */
-	protected $_auth = null;
+	protected $_user = null;
+
+	protected function _accessAlias() {
+		extract($this->request->params);
+		$library = isset($library) ? $library . '/' : '';
+		return $library . 'controllers/' . $controller . '/' . $action;
+	}
 
 	/**
-	 * Import Auth data
+	 * Import Auth data and fetch user group data
 	 */
 	protected function _init() {
 		parent::_init();
-		$this->_auth = Auth::check('default');
+		if($this->_user = Auth::check('default')) {
+			$this->_user['group'] = UserGroups::first($this->_user['user_group_id'])->to('array');
+		}
 	}
 
 	/**
@@ -36,7 +44,7 @@ class AccessController extends \lithium\action\Controller {
 	 * @throws \li3_usermanager\extensions\security\AccessDeniedException
 	 */
 	protected function _rejectBanned() {
-		if ($this->_auth && $this->_auth['user_group_id'] === 1) {
+		if ($this->_user && $this->_user['user_group_id'] === 1) {
 			throw new AccessDeniedException('You\'ve been banned!');
 		}
 	}
@@ -48,7 +56,7 @@ class AccessController extends \lithium\action\Controller {
 	 */
 	protected function _rejectLogged(array $url = array()) {
 		$url += array('library' => 'li3_usermanager', 'Users::index');
-		if ($this->_auth) {
+		if ($this->_user) {
 			$this->redirect($url);
 		}
 	}
@@ -68,7 +76,7 @@ class AccessController extends \lithium\action\Controller {
 			'message' => 'You don\'t have permissions to access here!',
 			'redirect' => array('library' => 'li3_usermanager', 'Session::create')
 		);
-		if (!$this->_auth) {
+		if (!$this->_user) {
 			switch ($options['method']) {
 				case 'redirect':
 					return $this->redirect($options['redirect']);
@@ -104,7 +112,7 @@ class AccessController extends \lithium\action\Controller {
 			'message' => 'You don\'t have permissions to access here!',
 			'redirect' => array('library' => 'li3_usermanager', 'Users::index')
 		);
-		$userGroup = ($this->_auth['user_group_id']) ? $groups[$this->_auth['user_group_id']] : 0;
+		$userGroup = ($this->_user['user_group_id']) ? $groups[$this->_user['user_group_id']] : 0;
 		if (!$userGroup || !in_array($userGroup, $options['allowed'])) {
 			switch ($options['method']) {
 				case 'redirect':

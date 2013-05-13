@@ -111,7 +111,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function editDetails() {
 		$this->_rejectNotLogged();
-		$details = AboutUsers::first(array('conditions' => array('user_id' => $this->_auth['id'])));
+		$details = AboutUsers::first(array('conditions' => array('user_id' => $this->_user['id'])));
 		if ($this->request->data) {
 			if ($details->save($this->request->data)) {
 				return $this->redirect($this->_index);
@@ -126,13 +126,13 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function changeEmail() {
 		$this->_rejectNotLogged();
-		$user = Users::first(array('conditions' => $this->_auth));
+		$user = Users::first(array('conditions' => $this->_user));
 		if ($this->request->data) {
 			if ($user->save(
 				array('email' => $this->request->data['email']),
 				array('events' => array('change_email'))
 			)) {
-				Auth::set('default', array('email' => $user->email) + $this->_auth);
+				Auth::set('default', array('email' => $user->email) + $this->_user);
 				return $this->redirect($this->_index);
 			}
 		}
@@ -145,7 +145,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function changePassword() {
 		$this->_rejectNotLogged();
-		$user = Users::first(array('conditions' => $this->_auth));
+		$user = Users::first(array('conditions' => $this->_user));
 		if ($this->request->data) {
 			if ($user->save(
 				array(
