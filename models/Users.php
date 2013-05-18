@@ -79,6 +79,15 @@ class Users extends \lithium\data\Model {
 		});
 	}
 
+	/**
+	 * Helper method to enable `Auth` to fetch user with group
+	 */
+	public static function firstWithGroup($conditions) {
+		$self = static::_object();
+		$conditions['with'] = 'UserGroups';
+		return $self::find('first', $conditions);
+	}
+
 }
 
 ?>
