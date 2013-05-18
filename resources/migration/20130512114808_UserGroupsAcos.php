@@ -5,11 +5,11 @@ namespace li3_usermanager\resources\migration;
 class UserGroupsAcos extends \li3_migrations\models\Migration {
 
 	protected $_records = array(
-		array('alias' => 'usermanager'),
-		array('alias' => 'controllers', 'parent_id' => '{node:usermanager}'),
-		array('alias' => 'ManageUsers', 'parent_id' => '{node:usermanager/controllers}'),
-		array('alias' => 'Session', 'parent_id' => '{node:usermanager/controllers}'),
-		array('alias' => 'Users', 'parent_id' => '{node:usermanager/controllers}')
+		array('alias' => 'li3_usermanager'),
+		array('alias' => 'controllers', 'parent_id' => '{node:li3_usermanager}'),
+		array('alias' => 'ManageUsers', 'parent_id' => '{node:li3_usermanager/controllers}'),
+		array('alias' => 'Session', 'parent_id' => '{node:li3_usermanager/controllers}'),
+		array('alias' => 'Users', 'parent_id' => '{node:li3_usermanager/controllers}')
 	);
 
 	protected $_model = '\li3_access\security\access\model\db_acl\Aco';

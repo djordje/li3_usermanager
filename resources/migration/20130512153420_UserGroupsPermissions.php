@@ -5,8 +5,12 @@ namespace li3_usermanager\resources\migration;
 class UserGroupsPermissions extends \li3_migrations\models\Migration {
 
 	protected $_records = array(
-//		array('users', 'usermanager', array('create', 'read', 'update', 'delete'), 0),
-//		array('users/members', 'usermanager/controllers/Users', array('create', 'read', 'update', 'delete'))
+		// administrators have full access
+		array('users/administrators', 'li3_usermanager', array('*')),
+		// enable members and subgroups to change account data
+		array('users/members', 'li3_usermanager/controllers/Users', array('index', 'editDetails', 'changeEmail', 'changePassword')),
+		// enable guests to create account, activate, request and reset password if have valid account
+		array('guests', 'li3_usermanager/controllers/Users', array('add', 'activate', 'requestResetPassword', 'resetPassword'))
 	);
 
 	protected $_model = '\li3_access\security\access\model\db_acl\Permission';

@@ -21,7 +21,7 @@ class Users extends \li3_migrations\models\Migration {
 		)
 	);
 
-	protected $_source = 'users';
+	protected $_model = '\li3_usermanager\models\Users';
 
 	public function up() {
 		return $this->save();

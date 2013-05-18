@@ -5,6 +5,7 @@ namespace li3_usermanager\resources\migration;
 class UserGroupsAros extends \li3_migrations\models\Migration {
 
 	protected $_records = array(
+		array('alias' => 'guests'),
 		array('alias' => 'users'),
 		array('alias' => 'members', 'parent_id' => '{node:users}'),
 		array('alias' => 'managers', 'parent_id' => '{node:users/members}'),
