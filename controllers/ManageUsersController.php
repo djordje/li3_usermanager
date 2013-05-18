@@ -9,6 +9,7 @@ namespace li3_usermanager\controllers;
 
 use li3_usermanager\models\Users;
 use li3_usermanager\models\UserGroups;
+use li3_usermanager\models\UserActivations;
 
 class ManageUsersController extends \li3_usermanager\extensions\controllers\AccessController {
 
@@ -20,7 +21,6 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 		);
 		parent::_init();
 		$this->response->cache(false);
-		$this->_allowGroups(array('admin', 'root'), array('method' => 'redirect'));
 	}
 
 	/**
@@ -40,9 +40,6 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 			foreach (UserGroups::all() as $group) {
 				$groups[$group->id] = $group->slug;
 			}
-			$rootId = array_flip($groups);
-			$rootId = $rootId['root'];
-			unset($groups[$rootId]);
 			$user = Users::first(array('conditions' => compact('id')));
 			if ($this->request->data && $this->request->data['user_group_id'] != $rootId) {
 				$user->user_group_id = $this->request->data['user_group_id'];
@@ -52,7 +49,7 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 					));
 				}
 			}
-			if ($user && $user->user_group_id != $rootId) {
+			if ($user) {
 				return compact('user', 'groups');
 			}
 		}
@@ -60,7 +57,7 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	}
 
 	/**
-	 * @todo Remove activation token if exists!
+	 * Activate user
 	 */
 	public function activate() {
 		$success = false;
@@ -72,6 +69,14 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 			if ($user && !$user->active) {
 				$user->active = 1;
 				$success = $user->save();
+				if ($success) {
+					$activation = UserActivations::first(array(
+						'conditions' => array('user_id' => $id)
+					));
+					if ($activation) {
+						$activation->delete();
+					}
+				}
 			}
 		}
 		return compact('success', 'user');
@@ -103,17 +108,20 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 		$user = null;
 		if ($id = $this->request->params['id']) {
 			$user = Users::first(array(
-				'conditions' => array('users.id' => $id),
+				'conditions' => array('Users.id' => $id),
 				'with' => array('AboutUsers', 'PasswordResets', 'UserActivations')
 			));
-			if ($user && $user->user_group_id == 5) {
-				$user = null;
-			}
 			if ($user) {
-				$user->about_user->delete();
-				$user->user_activation->delete();
-				foreach($user->password_resets as $pasword_reset) {
-					$pasword_reset->delete();
+				if ($user->about_user->user_id) {
+					$user->about_user->delete();
+				}
+				if ($user->user_activation->user_id) {
+					$user->user_activation->delete();
+				}
+				foreach($user->password_resets as $password_reset) {
+					if ($password_reset->user_id) {
+						$password_reset->delete();
+					}
 				}
 				$destroyed = $user->delete();
 			};

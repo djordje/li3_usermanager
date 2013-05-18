@@ -102,7 +102,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 				}
 			}
 		}
-		return $this->redirect($this->_index);
+		return $this->redirect($this->_login);
 	}
 
 	/**
@@ -126,7 +126,9 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function changeEmail() {
 		$this->_rejectNotLogged();
-		$user = Users::first(array('conditions' => $this->_user));
+		$user = $this->_user;
+		unset($user['user_group']);
+		$user = Users::first(array('conditions' => $user));
 		if ($this->request->data) {
 			if ($user->save(
 				array('email' => $this->request->data['email']),
@@ -145,7 +147,9 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function changePassword() {
 		$this->_rejectNotLogged();
-		$user = Users::first(array('conditions' => $this->_user));
+		$user = $this->_user;
+		unset($user['user_group']);
+		$user = Users::first(array('conditions' => $user));
 		if ($this->request->data) {
 			if ($user->save(
 				array(

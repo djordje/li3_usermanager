@@ -11,6 +11,8 @@ use lithium\security\Auth;
 
 class SessionController extends \li3_usermanager\extensions\controllers\AccessController{
 
+	protected $_acl = false;
+
 	protected function _init() {
 		$this->_render['paths'] = array(
 			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php',
@@ -42,9 +44,7 @@ class SessionController extends \li3_usermanager\extensions\controllers\AccessCo
 	 * Destroy session - log out user
 	 */
 	public function destroy() {
-		foreach(Auth::config() as $name => $config) {
-			Auth::clear($name);
-		}
+		Auth::clear('default');
 		return $this->redirect(array('library' => 'li3_usermanager', 'Session::create'));
 	}
 
