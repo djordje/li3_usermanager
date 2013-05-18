@@ -14,7 +14,8 @@ use li3_access\security\Access;
 Auth::config(array(
 	'default' => array(
 		'adapter' => 'Form',
-		'scope' => array('active' => true)
+		'scope' => array('active' => true),
+		'query' => 'firstWithGroup'
 	),
 	'inactive' => array(
 		'adapter' => 'Form',
@@ -22,6 +23,13 @@ Auth::config(array(
 	)
 ));
 
-Access::config(array('acl' => array('adapter' => 'DbAcl')));
+/**
+ * Access adapters configurations
+ * For details se `li3_access` documentation
+ */
+Access::config(array(
+	'acl' => array('adapter' => 'DbAcl'),
+	'rules' => array('adapter' => 'Rules')
+));
 
 ?>
