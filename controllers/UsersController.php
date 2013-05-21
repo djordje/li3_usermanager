@@ -12,23 +12,14 @@ use li3_swiftmailer\mailer\Transports;
 use li3_swiftmailer\mailer\Message;
 use li3_usermanager\extensions\util\Token;
 
-class UsersController extends \li3_usermanager\extensions\controllers\AccessController {
+class UsersController extends \li3_backend\extensions\controller\ComponentController {
 
-	/**
-	 * Predefined redirect routes
-	 */
-	private $_login = array('library' => 'li3_usermanager', 'Session::create');
-	private $_index = array('library' => 'li3_usermanager', 'Users::index');
+	protected $_viewAs = 'partial-component';
 
 	/**
 	 * Setup template paths
 	 */
 	protected function _init() {
-		$this->_render['paths'] = array(
-			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php',
-			'layout'   => LITHIUM_APP_PATH . '/views/layouts/default.html.php',
-			'element'  => LITHIUM_APP_PATH . '/views/elements/{:template}.html.php'
-		);
 		parent::_init();
 		$this->response->cache(false);
 	}
@@ -58,8 +49,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 						'token' => $token
 					))->save();
 					$link = Router::match(array(
-						'library' => 'li3_usermanager',
-						'Users::activate',
+						'li3_usermanager.Users::activate',
 						'username' => $user->username,
 						'token' => $token
 					), $this->request, array('absolute' => true));
@@ -71,7 +61,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 						->setBody('This is your activation link: ' . $link);
 					$mailer->send($message);
 				}
-				return $this->redirect($this->_login);
+				return $this->redirect('li3_usermanager.Session::create');
 			}
 		}
 		return compact('user');
@@ -102,7 +92,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 				}
 			}
 		}
-		return $this->redirect($this->_login);
+		return $this->redirect('li3_usermanager.Session::create');
 	}
 
 	/**
@@ -114,7 +104,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 		$details = AboutUsers::first(array('conditions' => array('user_id' => $this->_user['id'])));
 		if ($this->request->data) {
 			if ($details->save($this->request->data)) {
-				return $this->redirect($this->_index);
+				return $this->redirect('li3_usermanager.Users::index');
 			}
 		}
 		return compact('details');
@@ -135,7 +125,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 				array('events' => array('change_email'))
 			)) {
 				Auth::set('default', array('email' => $user->email) + $this->_user);
-				return $this->redirect($this->_index);
+				return $this->redirect('li3_usermanager.Users::index');
 			}
 		}
 		return compact('user');
@@ -160,7 +150,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 					'events' => 'change_password'
 				)
 			)) {
-				return $this->redirect($this->_index);
+				return $this->redirect('li3_usermanager.Users::index');
 			}
 		}
 		return compact('user');
@@ -202,8 +192,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 					));
 					if ($reset->save()) {
 						$link = Router::match(array(
-							'library' => 'li3_usermanager',
-							'Users::resetPassword',
+							'li3_usermanager.Users::resetPassword',
 							'username' => $user->username,
 							'token' => $token
 						), $this->request, array('absolute' => true));
@@ -231,7 +220,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 		$username = $this->request->params['username'];
 		$user = null;
 		if (!$token || !$username) {
-			return $this->redirect($this->_index);
+			return $this->redirect('li3_usermanager.Session::create');
 		}
 		$time = new \DateTime();
 		$expires = clone $time;
@@ -243,12 +232,12 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 			'with' => 'Users'
 		));
 		if (!$user) {
-			return $this->redirect($this->_index);
+			return $this->redirect('li3_usermanager.Session::create');
 		}
 		$expires->modify($user->expires);
 		if ($expires <= $time) {
 			$user->delete();
-			return $this->redirect($this->_index);
+			return $this->redirect('li3_usermanager.Session::create');
 		}
 		if ($this->request->data) {
 			$user->user->set(array(
@@ -257,7 +246,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 			));
 			if ($user->user->save(null, array('events' => array('reset_password')))) {
 				$user->delete();
-				return $this->redirect($this->_login);
+				return $this->redirect('li3_usermanager.Session::create');
 			}
 		}
 		return array('user' => $user->user);

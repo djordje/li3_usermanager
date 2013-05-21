@@ -11,14 +11,11 @@ use li3_usermanager\models\Users;
 use li3_usermanager\models\UserGroups;
 use li3_usermanager\models\UserActivations;
 
-class ManageUsersController extends \li3_usermanager\extensions\controllers\AccessController {
+class ManageUsersController extends \li3_backend\extensions\controller\ComponentController {
+
+	protected $_viewAs = 'backend-component';
 
 	protected function _init() {
-		$this->_render['paths'] = array(
-			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php',
-			'layout'   => LITHIUM_APP_PATH . '/views/layouts/default.html.php',
-			'element'  => LITHIUM_APP_PATH . '/views/elements/{:template}.html.php'
-		);
 		parent::_init();
 		$this->response->cache(false);
 	}
@@ -26,7 +23,7 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	/**
 	 * List all users
 	 */
-	public function index() {
+	public function backend_index() {
 		$users = Users::all(array('with' => 'UserGroups'));
 		return compact('users');
 	}
@@ -34,7 +31,7 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	/**
 	 * Promote user to other user group
 	 */
-	public function promote() {
+	public function backend_promote() {
 		if ($id = $this->request->params['id']) {
 			$groups = array();
 			foreach (UserGroups::all() as $group) {
@@ -44,22 +41,20 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 			if ($this->request->data && $this->request->data['user_group_id'] != $rootId) {
 				$user->user_group_id = $this->request->data['user_group_id'];
 				if ($user->save()) {
-					return $this->redirect(array(
-						'library' => 'li3_usermanager', 'ManageUsers::index'
-					));
+					return $this->redirect(array('li3_usermanager.ManageUsers::index', 'backend' => true));
 				}
 			}
 			if ($user) {
 				return compact('user', 'groups');
 			}
 		}
-		return $this->redirect(array('library' => 'li3_usermanager', 'ManageUsers::index'));
+		return $this->redirect(array('li3_usermanager.ManageUsers::index', 'backend' => true));
 	}
 
 	/**
 	 * Activate user
 	 */
-	public function activate() {
+	public function backend_activate() {
 		$success = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
@@ -85,7 +80,7 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	/**
 	 * @return array
 	 */
-	public function deactivate() {
+	public function backend_deactivate() {
 		$success = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
@@ -103,7 +98,7 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	/**
 	 * Destroy user with all related data if not in `root` group
 	 */
-	public function destroy() {
+	public function backend_destroy() {
 		$destroyed = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {

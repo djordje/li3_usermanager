@@ -9,16 +9,11 @@ namespace li3_usermanager\controllers;
 
 use lithium\security\Auth;
 
-class SessionController extends \li3_usermanager\extensions\controllers\AccessController{
+class SessionController extends \li3_backend\extensions\controller\ComponentController {
 
 	protected $_acl = false;
 
 	protected function _init() {
-		$this->_render['paths'] = array(
-			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php',
-			'layout'   => LITHIUM_APP_PATH . '/views/layouts/default.html.php',
-			'element'  => LITHIUM_APP_PATH . '/views/elements/{:template}.html.php'
-		);
 		parent::_init();
 		$this->response->cache(false);
 	}
@@ -28,10 +23,11 @@ class SessionController extends \li3_usermanager\extensions\controllers\AccessCo
 	 */
 	public function create() {
 		$this->_rejectLogged();
+		$this->_viewAs('partial-component');
 		$inactive = false;
 		if ($this->request->data) {
 			if (Auth::check('default', $this->request)) {
-				return $this->redirect(array('library' => 'li3_usermanager', 'Users::index'));
+				return $this->redirect('li3_usermanager.Users::index');
 			} elseif (Auth::check('inactive', $this->request)) {
 				$inactive = true;
 				Auth::clear('inactive');
@@ -45,7 +41,7 @@ class SessionController extends \li3_usermanager\extensions\controllers\AccessCo
 	 */
 	public function destroy() {
 		Auth::clear('default');
-		return $this->redirect(array('library' => 'li3_usermanager', 'Session::create'));
+		return $this->redirect('li3_usermanager.Session::create');
 	}
 
 }
