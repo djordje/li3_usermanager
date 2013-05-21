@@ -2,7 +2,7 @@
 
 <?=$this->html->link(
 	'<i class="icon-chevron-left"></i> Back',
-	array('library' => 'li3_usermanager', 'Users::index'),
+	'li3_usermanager.Users::index',
 	array('class' => 'btn', 'escape' => false)
 );?>
 
