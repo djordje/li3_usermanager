@@ -9,7 +9,7 @@ use li3_access\security\Access;
 
 /**
  * Auth configurations
- * Users authed trough 'inactive' configuration gets message about inactive account!
+ * Users authorized trough 'inactive' configuration gets message about inactive account!
  */
 Auth::config(array(
 	'default' => array(
