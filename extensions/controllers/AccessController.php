@@ -137,10 +137,10 @@ class AccessController extends \lithium\action\Controller {
 	/**
 	 * Redirect any logged in users from actions or controllers.
 	 * You can apply this method on controller (`_init()`) or action level
-	 * @param array $url `Router::match()` compatible url
+	 * @param array|string $url `Router::match()` compatible url
 	 */
-	protected function _rejectLogged(array $url = array()) {
-		$url += array('library' => 'li3_usermanager', 'Users::index');
+	protected function _rejectLogged($url = array()) {
+		!empty($url) || $url = 'li3_usermanager.Users::index';
 		if (!$this->_guest) {
 			$this->redirect($url);
 		}
@@ -159,7 +159,7 @@ class AccessController extends \lithium\action\Controller {
 		$options += array(
 			'method' => 'redirect',
 			'message' => 'You don\'t have permissions to access here!',
-			'redirect' => array('library' => 'li3_usermanager', 'Session::create')
+			'redirect' => 'li3_usermanager.Session::create'
 		);
 		if ($this->_guest) {
 			switch ($options['method']) {
