@@ -7,6 +7,7 @@
 
 namespace li3_usermanager\extensions\controllers;
 
+use li3_backend\extensions\controller\ComponentController;
 use lithium\security\Auth;
 use lithium\util\Inflector;
 use li3_usermanager\extensions\security\AccessDeniedException;
@@ -16,7 +17,7 @@ use li3_access\security\Access;
 /**
  * `AccessController` extend it if you need to control access in your controller.
  */
-class AccessController extends \lithium\action\Controller {
+class AccessController extends ComponentController {
 
 	/**
 	 * Auth `Auth::check('default')` data available as controller's property

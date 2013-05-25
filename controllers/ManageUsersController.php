@@ -7,11 +7,12 @@
 
 namespace li3_usermanager\controllers;
 
+use li3_usermanager\extensions\controllers\AccessController;
 use li3_usermanager\models\Users;
 use li3_usermanager\models\UserGroups;
 use li3_usermanager\models\UserActivations;
 
-class ManageUsersController extends \li3_backend\extensions\controller\ComponentController {
+class ManageUsersController extends AccessController {
 
 	protected $_viewAs = 'backend-component';
 

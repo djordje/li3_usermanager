@@ -7,9 +7,10 @@
 
 namespace li3_usermanager\controllers;
 
+use li3_usermanager\extensions\controllers\AccessController;
 use lithium\security\Auth;
 
-class SessionController extends \li3_backend\extensions\controller\ComponentController {
+class SessionController extends AccessController {
 
 	protected $_acl = false;
 

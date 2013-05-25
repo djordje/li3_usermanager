@@ -2,6 +2,7 @@
 
 namespace li3_usermanager\controllers;
 
+use li3_usermanager\extensions\controllers\AccessController;
 use lithium\security\Auth;
 use lithium\net\http\Router;
 use li3_usermanager\models\Users;
@@ -12,7 +13,7 @@ use li3_swiftmailer\mailer\Transports;
 use li3_swiftmailer\mailer\Message;
 use li3_usermanager\extensions\util\Token;
 
-class UsersController extends \li3_backend\extensions\controller\ComponentController {
+class UsersController extends AccessController {
 
 	protected $_viewAs = 'partial-component';
 
