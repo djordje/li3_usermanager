@@ -1,7 +1,7 @@
 [![project status](http://stillmaintained.com/djordje/li3_usermanager.png)]
 (http://stillmaintained.com/djordje/li3_usermanager)
 
-## You should use `master` branch, this branch require `li3_backend` to be published.
+## DEVELOPMENT BRANCH
 
 *You can find first revision of this plugin under TAG `0.1`*
 
