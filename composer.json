@@ -20,7 +20,7 @@
         "djordje/li3_backend": "dev-master",
         "djordje/li3_validators": "dev-master",
         "djordje/li3_swiftmailer": "dev-master",
-        "swiftmailer/swiftmailer": "v4.3.*"
+        "swiftmailer/swiftmailer": "v4.3.1"
     },
     "suggest": {
         "djordje/li3_migrations": "Easier database preparation trough migrations!"
