@@ -23,14 +23,14 @@ if (LI3_UM_EnableUserRegistration) {
 	Router::connect("{$umPrefix}{$user}/register", 'li3_usermanager.Users::add');
 }
 Router::connect(
-	"{$umPrefix}{$user}/activate/{:token}/{:username}", 'li3_usermanager.Users::activate'
+	"{$umPrefix}{$user}/activate/{:token}/{:id}", 'li3_usermanager.Users::activate'
 );
 Router::connect("{$umPrefix}{$user}/edit-details", 'li3_usermanager.Users::editDetails');
 Router::connect("{$umPrefix}{$user}/change-email", 'li3_usermanager.Users::changeEmail');
 Router::connect("{$umPrefix}{$user}/change-password", 'li3_usermanager.Users::changePassword');
 Router::connect("{$umPrefix}{$user}/reset-password", 'li3_usermanager.Users::requestResetPassword');
 Router::connect(
-	"{$umPrefix}{$user}/reset-password/{:token}/{:username}", 'li3_usermanager.Users::resetPassword'
+	"{$umPrefix}{$user}/reset-password/{:token}/{:id}", 'li3_usermanager.Users::resetPassword'
 );
 
 /**

@@ -3,7 +3,7 @@
 	$url = array(
 		'li3_usermanager.Users::resetPassword',
 		'token' => $this->_request->params['token'],
-		'username' => $this->_request->params['username']
+		'id' => $this->_request->params['id']
 	);
 ?>
 
