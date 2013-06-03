@@ -1,35 +1,31 @@
 <?php
 
+/**
+ * @copyright Copyright 2013, Djordje Kovacevic (http://djordjekovacevic.com)
+ * @license   http://opensource.org/licenses/bsd-license.php The BSD License
+ */
+
+
 namespace li3_usermanager\controllers;
 
+use li3_usermanager\models\Mailer;
+use li3_usermanager\extensions\controllers\AccessController;
 use lithium\security\Auth;
-use lithium\net\http\Router;
 use li3_usermanager\models\Users;
 use li3_usermanager\models\AboutUsers;
 use li3_usermanager\models\PasswordResets;
 use li3_usermanager\models\UserActivations;
-use li3_swiftmailer\mailer\Transports;
-use li3_swiftmailer\mailer\Message;
-use li3_usermanager\extensions\util\Token;
 
-class UsersController extends \li3_usermanager\extensions\controllers\AccessController {
+class UsersController extends AccessController {
 
-	/**
-	 * Predefined redirect routes
-	 */
-	private $_login = array('library' => 'li3_usermanager', 'Session::create');
-	private $_index = array('library' => 'li3_usermanager', 'Users::index');
+	protected $_viewAs = 'partial-component';
 
 	/**
 	 * Setup template paths
 	 */
 	protected function _init() {
-		$this->_render['paths'] = array(
-			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php',
-			'layout'   => LITHIUM_APP_PATH . '/views/layouts/default.html.php',
-			'element'  => LITHIUM_APP_PATH . '/views/elements/{:template}.html.php'
-		);
 		parent::_init();
+		Users::$request = $this->request;
 		$this->response->cache(false);
 	}
 
@@ -50,28 +46,8 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 		if ($this->request->data) {
 			$user = Users::create($this->request->data);
 			if ($user->save()) {
-				AboutUsers::create(array('user_id' => $user->id))->save();
-				if (LI3_UM_RequireUserActivation) {
-					$token = Token::generate($user->email);
-					UserActivations::create(array(
-						'user_id' => $user->id,
-						'token' => $token
-					))->save();
-					$link = Router::match(array(
-						'library' => 'li3_usermanager',
-						'Users::activate',
-						'username' => $user->username,
-						'token' => $token
-					), $this->request, array('absolute' => true));
-					$mailer = Transports::adapter('default');
-					$message = Message::newInstance()
-						->setSubject('Your activation link!')
-						->setFrom(LI3_UM_ActivationEmailFrom)
-						->setTo(array($user->email))
-						->setBody('This is your activation link: ' . $link);
-					$mailer->send($message);
-				}
-				return $this->redirect($this->_login);
+				if (LI3_UM_RequireUserActivation) Mailer::send();
+				return $this->redirect('li3_usermanager.Session::create');
 			}
 		}
 		return compact('user');
@@ -83,26 +59,13 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	public function activate() {
 		$this->_rejectLogged();
 		$token = $this->request->params['token'];
-		$username = $this->request->params['username'];
+		$id = $this->request->params['id'];
 		$user = null;
 		$activation = null;
-		if ($token && $username) {
-			$user = Users::first(array(
-				'conditions' => array('username' => $username, 'active' => 0)
-			));
-			if ($user) {
-				$activation = UserActivations::first(array(
-					'conditions' => array('user_id' => $user->id, 'token' => $token)
-				));
-				if ($activation) {
-					$user->active = 1;
-					if ($user->save()) {
-						$activation->delete();
-					}
-				}
-			}
+		if ($token && $id) {
+			UserActivations::activate(array('user_id' => $id, 'token' => $token));
 		}
-		return $this->redirect($this->_index);
+		return $this->redirect('li3_usermanager.Session::create');
 	}
 
 	/**
@@ -111,10 +74,10 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function editDetails() {
 		$this->_rejectNotLogged();
-		$details = AboutUsers::first(array('conditions' => array('user_id' => $this->_auth['id'])));
+		$details = AboutUsers::first(array('conditions' => array('user_id' => $this->_user['id'])));
 		if ($this->request->data) {
 			if ($details->save($this->request->data)) {
-				return $this->redirect($this->_index);
+				return $this->redirect('li3_usermanager.Users::index');
 			}
 		}
 		return compact('details');
@@ -126,14 +89,16 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function changeEmail() {
 		$this->_rejectNotLogged();
-		$user = Users::first(array('conditions' => $this->_auth));
+		$user = $this->_user;
+		unset($user['user_group']);
+		$user = Users::first(array('conditions' => $user));
 		if ($this->request->data) {
 			if ($user->save(
 				array('email' => $this->request->data['email']),
 				array('events' => array('change_email'))
 			)) {
-				Auth::set('default', array('email' => $user->email) + $this->_auth);
-				return $this->redirect($this->_index);
+				Auth::set('default', array('email' => $user->email) + $this->_user);
+				return $this->redirect('li3_usermanager.Users::index');
 			}
 		}
 		return compact('user');
@@ -145,7 +110,9 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	 */
 	public function changePassword() {
 		$this->_rejectNotLogged();
-		$user = Users::first(array('conditions' => $this->_auth));
+		$user = $this->_user;
+		unset($user['user_group']);
+		$user = Users::first(array('conditions' => $user));
 		if ($this->request->data) {
 			if ($user->save(
 				array(
@@ -156,7 +123,7 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 					'events' => 'change_password'
 				)
 			)) {
-				return $this->redirect($this->_index);
+				return $this->redirect('li3_usermanager.Users::index');
 			}
 		}
 		return compact('user');
@@ -170,50 +137,14 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 		$emailSent = false;
 		$message = null;
 		if ($this->request->data) {
-			$user = Users::first(array('conditions' => array(
-				'username' => $this->request->data['username'],
-				'email' => $this->request->data['email']
-			)));
-			if ($user) {
-				$time = new \DateTime();
-				$reset = PasswordResets::first(array('conditions' => array(
-					'user_id' => $user->id
-				)));
-				if ($reset) {
-					$expires = new \DateTime($reset->expires);
-					if ($expires <= $time) {
-						$reset->delete();
-					} else {
-						$message = 'You already have reset token in your email inbox!';
-					}
-				}
-				if (!$reset || !$reset->exists()) {
-					$expires = clone $time;
-					$expires->modify(LI3_UM_PasswordResetExpires);
-					$token = Token::generate($user->email);
-					$reset = PasswordResets::create(array(
-						'user_id' => $user->id,
-						'expires' => $expires->format('Y-m-d H:i:s'),
-						'token' => $token
-					));
-					if ($reset->save()) {
-						$link = Router::match(array(
-							'library' => 'li3_usermanager',
-							'Users::resetPassword',
-							'username' => $user->username,
-							'token' => $token
-						), $this->request, array('absolute' => true));
-						$mailer = Transports::adapter('default');
-						$message = Message::newInstance()
-							->setSubject('Your password reset link!')
-							->setFrom(LI3_UM_PasswordResetEmailFrom)
-							->setTo(array($user->email))
-							->setBody('This is your password reset link: ' . $link);
-						$emailSent = $mailer->send($message);
-						$message = 'Check your email inbox for reset token.';
-					}
-				}
+			$requestPasswordReset = Users::requestPasswordReset($this->request->data);
+			if ($requestPasswordReset === PasswordResets::RESET_TOKEN_EXISTS) {
+				$message = 'You already have reset token in your email inbox!';
 			}
+			if ($requestPasswordReset === PasswordResets::GENERATED_NEW_RESET_TOKEN) {
+				$message = 'Check your email inbox for reset token.';
+			}
+			$emailSent = Mailer::send();
 		}
 		return compact('emailSent', 'message');
 	}
@@ -224,39 +155,25 @@ class UsersController extends \li3_usermanager\extensions\controllers\AccessCont
 	public function resetPassword() {
 		$this->_rejectLogged();
 		$token = $this->request->params['token'];
-		$username = $this->request->params['username'];
-		$user = null;
-		if (!$token || !$username) {
-			return $this->redirect($this->_index);
+		$id = $this->request->params['id'];
+		if (!$token || !$id) {
+			return $this->redirect('li3_usermanager.Session::create');
 		}
-		$time = new \DateTime();
-		$expires = clone $time;
-		$user = PasswordResets::first(array(
-			'conditions' => array(
-				'token' => $token,
-				'users.username' => $username
-			),
-			'with' => 'Users'
-		));
-		if (!$user) {
-			return $this->redirect($this->_index);
+		if (!$reset = PasswordResets::getResetUser(array('user_id' => $id, 'token' => $token))) {
+			return $this->redirect('li3_usermanager.Session::create');
 		}
-		$expires->modify($user->expires);
-		if ($expires <= $time) {
-			$user->delete();
-			return $this->redirect($this->_index);
-		}
+
 		if ($this->request->data) {
-			$user->user->set(array(
+			$reset->user->set(array(
 				'password' => $this->request->data['password'],
 				'confirm_password' => $this->request->data['confirm_password']
 			));
-			if ($user->user->save(null, array('events' => array('reset_password')))) {
-				$user->delete();
-				return $this->redirect($this->_login);
+			if ($reset->user->save(null, array('events' => array('reset_password')))) {
+				$reset->delete();
+				return $this->redirect('li3_usermanager.Session::create');
 			}
 		}
-		return array('user' => $user->user);
+		return array('user' => $reset->user);
 	}
 
 }

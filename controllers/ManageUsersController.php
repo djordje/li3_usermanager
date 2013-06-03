@@ -7,71 +7,87 @@
 
 namespace li3_usermanager\controllers;
 
+use li3_usermanager\extensions\controllers\AccessController;
 use li3_usermanager\models\Users;
 use li3_usermanager\models\UserGroups;
+use li3_usermanager\models\UserActivations;
 
-class ManageUsersController extends \li3_usermanager\extensions\controllers\AccessController {
+class ManageUsersController extends AccessController {
+
+	protected $_viewAs = 'backend-component';
 
 	protected function _init() {
-		$this->_render['paths'] = array(
-			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php',
-			'layout'   => LITHIUM_APP_PATH . '/views/layouts/default.html.php',
-			'element'  => LITHIUM_APP_PATH . '/views/elements/{:template}.html.php'
-		);
 		parent::_init();
 		$this->response->cache(false);
-		$this->_allowGroups(array('admin', 'root'), array('method' => 'redirect'));
 	}
 
 	/**
 	 * List all users
 	 */
-	public function index() {
+	public function backend_index() {
 		$users = Users::all(array('with' => 'UserGroups'));
 		return compact('users');
 	}
 
 	/**
-	 * Promote user to other user group
+	 * Add new user (instantly activated)
 	 */
-	public function promote() {
-		if ($id = $this->request->params['id']) {
-			$groups = array();
-			foreach (UserGroups::all() as $group) {
-				$groups[$group->id] = $group->slug;
-			}
-			$rootId = array_flip($groups);
-			$rootId = $rootId['root'];
-			unset($groups[$rootId]);
-			$user = Users::first(array('conditions' => compact('id')));
-			if ($this->request->data && $this->request->data['user_group_id'] != $rootId) {
-				$user->user_group_id = $this->request->data['user_group_id'];
-				if ($user->save()) {
-					return $this->redirect(array(
-						'library' => 'li3_usermanager', 'ManageUsers::index'
-					));
-				}
-			}
-			if ($user && $user->user_group_id != $rootId) {
-				return compact('user', 'groups');
+	public function backend_add() {
+		$user = null;
+		if ($this->request->data) {
+			$user = Users::create($this->request->data);
+			if ($user->save()) {
+				return $this->redirect(array(
+					'li3_usermanager.ManageUsers::index', 'backend' => true
+				));
 			}
 		}
-		return $this->redirect(array('library' => 'li3_usermanager', 'ManageUsers::index'));
+		return compact('user');
 	}
 
 	/**
-	 * @todo Remove activation token if exists!
+	 * Promote user to other user group
 	 */
-	public function activate() {
+	public function backend_promote() {
+		if ($id = $this->request->params['id']) {
+			$groups = array();
+			$manageUsers = array('li3_usermanager.ManageUsers::index', 'backend' => true);
+			foreach (UserGroups::all() as $group) {
+				$groups[$group->id] = $group->slug;
+			}
+			$user = Users::first(array('conditions' => compact('id')));
+			if ($this->request->data) {
+				$user->user_group_id = $this->request->data['user_group_id'];
+				if ($user->save()) {
+					return $this->redirect($manageUsers);
+				}
+			}
+			if ($user) {
+				return compact('user', 'groups');
+			}
+		}
+		return $this->redirect($manageUsers);
+	}
+
+	/**
+	 * Activate user
+	 */
+	public function backend_activate() {
 		$success = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
-			$user = Users::first(array(
-				'conditions' => compact('id')
-			));
+			$user = Users::first(array('conditions' => compact('id')));
 			if ($user && !$user->active) {
 				$user->active = 1;
 				$success = $user->save();
+				if ($success) {
+					$activation = UserActivations::first(array(
+						'conditions' => array('user_id' => $id)
+					));
+					if ($activation) {
+						$activation->delete();
+					}
+				}
 			}
 		}
 		return compact('success', 'user');
@@ -80,13 +96,11 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	/**
 	 * @return array
 	 */
-	public function deactivate() {
+	public function backend_deactivate() {
 		$success = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
-			$user = Users::first(array(
-				'conditions' => compact('id')
-			));
+			$user = Users::first(array('conditions' => compact('id')));
 			if ($user && $user->active) {
 				$user->active = 0;
 				$success = $user->save();
@@ -98,22 +112,25 @@ class ManageUsersController extends \li3_usermanager\extensions\controllers\Acce
 	/**
 	 * Destroy user with all related data if not in `root` group
 	 */
-	public function destroy() {
+	public function backend_destroy() {
 		$destroyed = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
 			$user = Users::first(array(
-				'conditions' => array('users.id' => $id),
+				'conditions' => array('Users.id' => $id),
 				'with' => array('AboutUsers', 'PasswordResets', 'UserActivations')
 			));
-			if ($user && $user->user_group_id == 5) {
-				$user = null;
-			}
 			if ($user) {
-				$user->about_user->delete();
-				$user->user_activation->delete();
-				foreach($user->password_resets as $pasword_reset) {
-					$pasword_reset->delete();
+				if ($user->about_user->user_id) {
+					$user->about_user->delete();
+				}
+				if ($user->user_activation->user_id) {
+					$user->user_activation->delete();
+				}
+				foreach($user->password_resets as $password_reset) {
+					if ($password_reset->user_id) {
+						$password_reset->delete();
+					}
 				}
 				$destroyed = $user->delete();
 			};
