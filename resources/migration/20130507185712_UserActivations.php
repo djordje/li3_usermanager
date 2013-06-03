@@ -11,7 +11,7 @@ class UserActivations extends \li3_migrations\models\Migration {
 
 	protected $_records = array();
 
-	protected $_source = 'user_activations';
+	protected $_model = '\li3_usermanager\models\UserActivations';
 
 	public function up() {
 		return $this->create();

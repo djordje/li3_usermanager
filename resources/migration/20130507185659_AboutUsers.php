@@ -11,12 +11,14 @@ class AboutUsers extends \li3_migrations\models\Migration {
 		'about' => array('type' => 'text', 'default' => null, 'null' => true)
 	);
 
-	protected $_records = array();
+	protected $_records = array(
+		array('user_id' => 1)
+	);
 
-	protected $_source = 'about_users';
+	protected $_model = '\li3_usermanager\models\AboutUsers';
 
 	public function up() {
-		return $this->create();
+		return $this->save();
 	}
 
 	public function down() {

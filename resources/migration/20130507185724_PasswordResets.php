@@ -12,7 +12,7 @@ class PasswordResets extends \li3_migrations\models\Migration {
 
 	protected $_records = array();
 
-	protected $_source = 'password_resets';
+	protected $_model = '\li3_usermanager\models\PasswordResets';
 
 	public function up() {
 		return $this->create();

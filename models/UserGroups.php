@@ -7,7 +7,9 @@
 
 namespace li3_usermanager\models;
 
-class UserGroups extends \lithium\data\Model {
+class UserGroups extends \li3_behaviors\data\model\Behaviorable {
+
+	protected $_actsAs = array('Tree');
 
 	public $hasMany = array('Users');
 

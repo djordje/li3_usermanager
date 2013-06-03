@@ -1,22 +1,28 @@
 {
-	"name": "djordje/li3_usermanager",
-	"type": "lithium-library",
-	"description": "User management for Lithium PHP framework",
-	"keywords": ["php", "user", "manage","lithium", "li3"],
-	"homepage": "https://github.com/djordje/li3_usermanager",
-	"license": "BSD-3-Clause",
-	"minimum-stability": "dev",
-	"authors": [
-		{
-			"name": "Djordje Kovacevic",
-			"homepage": "http://djordjekovacevic.com"
-		}
-	],
-	"require": {
-		"php": ">=5.3",
-		"composer/installers": "dev-master",
-		"djordje/li3_validators": "dev-master",
-		"djordje/li3_swiftmailer": "dev-master",
-		"swiftmailer/swiftmailer": "v4.2.2"
-	}
+    "name": "djordje/li3_usermanager",
+    "type": "lithium-library",
+    "description": "User management for Lithium PHP framework",
+    "keywords": ["php", "user", "manage", "lithium", "li3"],
+    "homepage": "https://github.com/djordje/li3_usermanager",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Djordje Kovacevic",
+            "homepage": "http://djordjekovacevic.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "composer/installers": "dev-master",
+        "michaelhue/li3_gravatar": "dev-master",
+        "jails/li3_access": "dev-php-5.3",
+        "djordje/li3_backend": "dev-master",
+        "djordje/li3_validators": "dev-master",
+        "djordje/li3_swiftmailer": "dev-master",
+        "swiftmailer/swiftmailer": "v4.3.1"
+    },
+    "suggest": {
+        "djordje/li3_migrations": "Easier database preparation trough migrations!"
+    }
 }

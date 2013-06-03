@@ -3,33 +3,42 @@
 use lithium\net\http\Router;
 
 /**
- * Usermanager URL prefix and library
+ * Url prefix
  */
-$um = '/user';
-
-$umUrl = function($url) {
-	return (array) $url + array('library' => 'li3_usermanager');
-};
+$umPrefix = '/';
+$user = 'user';
+$users = $user . 's';
 
 /**
- * Plugin routes
+ * SessionController routes
  */
-Router::connect('/login', $umUrl('Session::create'));
-Router::connect('/logout', $umUrl('Session::destroy'));
-Router::connect($um, $umUrl('Users::index'));
+Router::connect($umPrefix . 'login', 'li3_usermanager.Session::create');
+Router::connect($umPrefix . 'logout', 'li3_usermanager.Session::destroy');
+
+/**
+ * UsersController routes
+ */
+Router::connect($umPrefix . $user, 'li3_usermanager.Users::index');
 if (LI3_UM_EnableUserRegistration) {
-	Router::connect("{$um}/register", $umUrl('Users::add'));
+	Router::connect("{$umPrefix}{$user}/register", 'li3_usermanager.Users::add');
 }
-Router::connect("{$um}/activate/{:token}/{:username}", $umUrl('Users::activate'));
-Router::connect("{$um}/edit/details", $umUrl('Users::editDetails'));
-Router::connect("{$um}/edit/change-email", $umUrl('Users::changeEmail'));
-Router::connect("{$um}/edit/change-password", $umUrl('Users::changePassword'));
-Router::connect("{$um}/edit/reset-password", $umUrl('Users::requestResetPassword'));
 Router::connect(
-	"{$um}/edit/reset-password/{:token}/{:username}", $umUrl('Users::resetPassword')
+	"{$umPrefix}{$user}/activate/{:token}/{:id}", 'li3_usermanager.Users::activate'
 );
-Router::connect("{$um}/manage/{:action}/{:id}", $umUrl(array(
-	'controller' => 'ManageUsers', 'id' => null
-)));
+Router::connect("{$umPrefix}{$user}/edit-details", 'li3_usermanager.Users::editDetails');
+Router::connect("{$umPrefix}{$user}/change-email", 'li3_usermanager.Users::changeEmail');
+Router::connect("{$umPrefix}{$user}/change-password", 'li3_usermanager.Users::changePassword');
+Router::connect("{$umPrefix}{$user}/reset-password", 'li3_usermanager.Users::requestResetPassword');
+Router::connect(
+	"{$umPrefix}{$user}/reset-password/{:token}/{:id}", 'li3_usermanager.Users::resetPassword'
+);
+
+/**
+ * ManageUsersController routes
+ */
+Router::connect(
+	"{$umPrefix}manage/{$users}/{:action}/{:id}",
+	array('controller' => 'li3_usermanager.ManageUsers', 'id' => null)
+);
 
 ?>

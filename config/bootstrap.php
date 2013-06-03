@@ -1,6 +1,5 @@
 <?php
 
-use lithium\security\Auth;
 use lithium\core\Libraries;
 
 /**
@@ -57,40 +56,8 @@ define('LI3_UM_EnableUserRegistration', $LI3_UM_Options['enableUserRegistration'
 define('LI3_UM_PasswordResetExpires', $LI3_UM_Options['passwordResetExpires']);
 
 /**
- * Auth configurations
- * Users authed trough 'inactive' configuration gets message about inactive account!
- * Configurations named 'banned', 'member', 'manager', 'admin', 'root' can be used with
- * 'li3_access' AuthRbac adapter.
+ * Import Auth and Access configurations
  */
-Auth::config(array(
-	'default' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => true)
-	),
-	'inactive' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => false)
-	),
-	'banner' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => true, 'user_group_id' => 1)
-	),
-	'member' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => true, 'user_group_id' => 2)
-	),
-	'manager' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => true, 'user_group_id' => 3)
-	),
-	'admin' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => true, 'user_group_id' => 4)
-	),
-	'root' => array(
-		'adapter' => 'Form',
-		'scope' => array('active' => true, 'user_group_id' => 5)
-	)
-));
+require __DIR__ . '/bootstrap/access.php';
 
 ?>
