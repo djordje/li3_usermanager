@@ -46,7 +46,7 @@ class UsersController extends AccessController {
 		if ($this->request->data) {
 			$user = Users::create($this->request->data);
 			if ($user->save()) {
-				Mailer::send();
+				if (LI3_UM_RequireUserActivation) Mailer::send();
 				return $this->redirect('li3_usermanager.Session::create');
 			}
 		}

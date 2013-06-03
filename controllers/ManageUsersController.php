@@ -30,26 +30,43 @@ class ManageUsersController extends AccessController {
 	}
 
 	/**
+	 * Add new user (instantly activated)
+	 */
+	public function backend_add() {
+		$user = null;
+		if ($this->request->data) {
+			$user = Users::create($this->request->data);
+			if ($user->save()) {
+				return $this->redirect(array(
+					'li3_usermanager.ManageUsers::index', 'backend' => true
+				));
+			}
+		}
+		return compact('user');
+	}
+
+	/**
 	 * Promote user to other user group
 	 */
 	public function backend_promote() {
 		if ($id = $this->request->params['id']) {
 			$groups = array();
+			$manageUsers = array('li3_usermanager.ManageUsers::index', 'backend' => true);
 			foreach (UserGroups::all() as $group) {
 				$groups[$group->id] = $group->slug;
 			}
 			$user = Users::first(array('conditions' => compact('id')));
-			if ($this->request->data && $this->request->data['user_group_id'] != $rootId) {
+			if ($this->request->data) {
 				$user->user_group_id = $this->request->data['user_group_id'];
 				if ($user->save()) {
-					return $this->redirect(array('li3_usermanager.ManageUsers::index', 'backend' => true));
+					return $this->redirect($manageUsers);
 				}
 			}
 			if ($user) {
 				return compact('user', 'groups');
 			}
 		}
-		return $this->redirect(array('li3_usermanager.ManageUsers::index', 'backend' => true));
+		return $this->redirect($manageUsers);
 	}
 
 	/**
@@ -59,9 +76,7 @@ class ManageUsersController extends AccessController {
 		$success = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
-			$user = Users::first(array(
-				'conditions' => compact('id')
-			));
+			$user = Users::first(array('conditions' => compact('id')));
 			if ($user && !$user->active) {
 				$user->active = 1;
 				$success = $user->save();
@@ -85,9 +100,7 @@ class ManageUsersController extends AccessController {
 		$success = false;
 		$user = null;
 		if ($id = $this->request->params['id']) {
-			$user = Users::first(array(
-				'conditions' => compact('id')
-			));
+			$user = Users::first(array('conditions' => compact('id')));
 			if ($user && $user->active) {
 				$user->active = 0;
 				$success = $user->save();

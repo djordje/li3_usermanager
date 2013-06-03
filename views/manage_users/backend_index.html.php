@@ -1,6 +1,6 @@
 <?php $this->title('Manage Users'); ?>
 
-<table class="table">
+<table class="table table-striped table-bordered table-hover">
 	<thead>
 		<tr>
 			<th>Username</th>
