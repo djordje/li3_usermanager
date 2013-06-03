@@ -1,8 +1,6 @@
 [![project status](http://stillmaintained.com/djordje/li3_usermanager.png)]
 (http://stillmaintained.com/djordje/li3_usermanager)
 
-## DEVELOPMENT BRANCH
-
 *You can find first revision of this plugin under TAG `0.1`*
 
 # User managemant for [Lithium PHP framework](http://lithify.me/)
@@ -14,70 +12,79 @@
 * Password resets trough link with token
 * Updating user data (email, password, about...)
 * Log in / log out
-* Access control trough AccessController (user auth data inspection)
-* User managemant (allowed for admins/root)
+* Access control trough AccessController (user auth data inspection and `jails/li3_access` wrapper)
+* User managemant (allowed for admins)
+  * Create users
   * Promotion (group change)
   * Activation / deactivation
   * Editing users (email, password, about...)
 
 ## Instalation
 
-Checkout **li3_usermanager** to either of your library directories:
+Easiest way to install `li3_usermanager` is trough `composer` (you can find documentation [here](http://getcomposer.org/))!
 
-	cd libraries
-	git clone git://github.com/djordje/li3_usermanager.git
+You should require `li3_usermanager` and `li3_migrations` to migrate database to desired state:
 
-Then load it in your main app config. Open `app/config/bootstrap/libraries.php` with your favorite
-editor, and add:
+```json
 
-	Libraries::add('li3_usermanager');
+{
+    "minimum-stability": "dev",
+    "require": {
+        "djordje/li3_usermanager": "dev-master",
+        "djordje/li3_migrations": "dev-master"
+    }
+}
 
-Setup `default` MySQL database connection in your `app/config/bootstrap/connections.php`.
-Uncoment `require` for `connections.php` and `session.php` in your `app/config/bootstrap.php`
+```
 
-### Import database tables
+Then run `composer install`
 
-Checkout **li3_migrations** and **li3_fixtures** to either of your library directories:
+Now you have all dependencies for both libraries installed.
 
-	cd libraries
-	git clone git://github.com/djordje/li3_migrations.git
-	git clone git://github.com/UnionOfRAD/li3_fixtures.git
+Next step is to add libraries to `lithium`, go to `app/config/bootstrap/libraries.php` and add next lines:
 
-Then load it in your main app config. Open `app/config/bootstrap/libraries.php` with your favorite
-editor, and add:
+```php
+// li3_migrations
+Libraries::add('li3_migrations');
+Libraries::add('li3_fixtures');
 
-	Libraries::add('li3_migrations');
-	Libraries::add('li3_fixtures');
+// li3_usermanager
+Libraries::add('li3_gravatar');
+Libraries::add('li3_behaviors');
+Libraries::add('li3_tree');
+Libraries::add('li3_access');
+Libraries::add('li3_validators');
+Libraries::add('li3_swiftmailer');
+Libraries::add('li3_usermanager');
+Libraries::add('li3_backend');
 
-Go to you app dir with command line and run `li3 migrate up --library=li3_usermanager`
+```
 
-### Install dependencies
+Now open `terminal` and migrate database (you should have working database connection setup),
+assume you have `li3` in your path, or use full path to `lithium/console/li3` instead:
 
-Clone dependencies to your `libraries` and load them in `app/config/bootstrap/libraries.php`.
+```
 
-This plugins use:
+// Create DB tables needed by `li3_access`
+li3 migrate up --library=li3_access
 
-* **[li3_validators](http://github.com/djordje/li3_validators)**
-* **[li3_swiftmailer](http://github.com/djordje/li3_swiftmailer)** (config-update branch)
-* **[swiftmailer](http://github.com/swiftmailer/swiftmailer)**
+// Create DB tables needed by `li3_usermanager` and populate `li3_access` table with needed rules
+li3 migrate up --library=li3_usermanager
 
-*This plugin use Twitter Bootstrap classes in view.*
+```
 
-## li3_access support (deprecated, this will be removed after adapting to `jails/li3_access`)
+## Usage
 
-**[li3_access](http://github.com/djordje/li3_access)** :
-Checkout the code to either of your library directories:
+Go to `http://your-url/login` and login with username: `root`, password `root`. This is default user,
+and you should change password to something else.
 
-	cd libraries
-	git clone git://github.com/djordje/li3_access.git
-
-With predefined Auth configurations for each user group you can start to use `li3_access`
-immediately.
+Now yo can go to `http://your-url/backend/manage/users` creadte, update, delete, promote users.
 
 ## TODO
 
-* Write unit tests for application
-* Finish `ManageUsers` controller (Add abillity to edit user, and move some logic to models to
-so we can reuse it in console commands)
-* Finish console command
-* Adapt library to use `jails/li3_access`
+- [ ] Write unit tests for application
+- [ ] Finish `ManageUsers` controller (Add abillity to edit user)
+- [ ] Finish console command
+- [ ] Better documentation (add info about library options)
+- [x] Move some logic to models so we can reuse it in console commands
+- [x] Adapt library to use `jails/li3_access`
