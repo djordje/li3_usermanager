@@ -15,6 +15,7 @@ use li3_usermanager\models\Users;
 use li3_usermanager\models\AboutUsers;
 use li3_usermanager\models\PasswordResets;
 use li3_usermanager\models\UserActivations;
+use lithium\security\validation\RequestToken;
 
 class UsersController extends AccessController {
 
@@ -44,6 +45,10 @@ class UsersController extends AccessController {
 		$this->_rejectLogged();
 		$user = null;
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('user');
+			}
 			$user = Users::create($this->request->data);
 			if ($user->save()) {
 				if (LI3_UM_RequireUserActivation) Mailer::send();
@@ -76,6 +81,10 @@ class UsersController extends AccessController {
 		$this->_rejectNotLogged();
 		$details = AboutUsers::first(array('conditions' => array('user_id' => $this->_user['id'])));
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('details');
+			}
 			if ($details->save($this->request->data)) {
 				return $this->redirect('li3_usermanager.Users::index');
 			}
@@ -93,6 +102,10 @@ class UsersController extends AccessController {
 		unset($user['user_group']);
 		$user = Users::first(array('conditions' => $user));
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('user');
+			}
 			if ($user->save(
 				array('email' => $this->request->data['email']),
 				array('events' => array('change_email'))
@@ -114,6 +127,10 @@ class UsersController extends AccessController {
 		unset($user['user_group']);
 		$user = Users::first(array('conditions' => $user));
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('user');
+			}
 			if ($user->save(
 				array(
 					'old_password' => $this->request->data['old_password'],
@@ -137,6 +154,10 @@ class UsersController extends AccessController {
 		$emailSent = false;
 		$message = null;
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('emailSent', 'message');
+			}
 			$requestPasswordReset = Users::requestPasswordReset($this->request->data);
 			if ($requestPasswordReset === PasswordResets::RESET_TOKEN_EXISTS) {
 				$message = 'You already have reset token in your email inbox!';
@@ -164,6 +185,10 @@ class UsersController extends AccessController {
 		}
 
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('user');
+			}
 			$reset->user->set(array(
 				'password' => $this->request->data['password'],
 				'confirm_password' => $this->request->data['confirm_password']

@@ -9,6 +9,7 @@ namespace li3_usermanager\controllers;
 
 use li3_usermanager\extensions\controllers\AccessController;
 use lithium\security\Auth;
+use lithium\security\validation\RequestToken;
 
 class SessionController extends AccessController {
 
@@ -27,6 +28,10 @@ class SessionController extends AccessController {
 		$this->_viewAs('partial-component');
 		$inactive = false;
 		if ($this->request->data) {
+			if (!RequestToken::check($this->request)) {
+				RequestToken::get(array('regenerate' => true));
+				return compact('inactive');
+			}
 			if (Auth::check('default', $this->request)) {
 				return $this->redirect('li3_usermanager.Users::index');
 			} elseif (Auth::check('inactive', $this->request)) {

@@ -6,7 +6,8 @@
 	array('class' => 'btn', 'escape' => false)
 );?>
 
-<?=$this->form->create($details);?>
+<?=$this->form->create($details, array('url' => 'li3_usermanager.Users::editDetails'));?>
+	<?=$this->security->requestToken(); ?>
 	<?=$this->form->field('fullname');?>
 	<?=$this->form->field('homepage');?>
 	<div>

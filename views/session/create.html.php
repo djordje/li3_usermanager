@@ -4,7 +4,8 @@
 	<p>Your account is inactive!</p>
 <?php endif; ?>
 
-<?=$this->form->create(null);?>
+<?=$this->form->create(null, array('url' => 'li3_usermanager.Session::create'));?>
+	<?=$this->security->requestToken(); ?>
 	<?=$this->form->field('username');?>
 	<?=$this->form->field('password', array('type' => 'password'));?>
 	<?=$this->form->submit('Login', array('class' => 'btn btn-primary'));?>

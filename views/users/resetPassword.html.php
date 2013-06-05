@@ -8,6 +8,7 @@
 ?>
 
 <?=$this->form->create($user->user, compact('url'));?>
+	<?=$this->security->requestToken(); ?>
 	<?=$this->form->field('password', array('type' => 'password'));?>
 	<?=$this->form->field('confirm_password', array('type' => 'password'));?>
 	<?=$this->form->submit('Reset', array('class' => 'btn btn-primary'));?>
